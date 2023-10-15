@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module model_uart(/*AUTOARG*/
+ module model_uart(/*AUTOARG*/
    // Outputs
    TX,
    // Inputs
@@ -15,7 +15,7 @@ module model_uart(/*AUTOARG*/
    parameter name    = "UART0";
    
    reg [7:0] rxData;
-	reg [31:0] result;
+	reg [31:0] out;
    event     evBit;
    event     evByte;
    event     evTxBit;
@@ -38,16 +38,19 @@ module model_uart(/*AUTOARG*/
              rxData[7:0] = {RX,rxData[7:1]};
           end
         ->evByte;
+        //$display ("%d %s Received byte %02x (%s)", $stime, name, rxData, rxData);
      end
 	  
-	always @ (evByte)
-	  begin
-	    if (rxData == 8'h0a)
-			$display ("%d %s Received word %02x (%s)", $stime, name, result, result);
-		 else
-		   result = {result[23:0], rxData[7:0]};
-	  end
-		
+	  
+	 always @ (evByte)
+      begin
+         if (rxData == 8'h0a)
+            $display ("%d %s Received word %02x (%s)", $stime, name, out, out);
+         else
+            out[31:0] = {out[23:0], rxData[7:0]};
+      end
+	
+
    task tskRxData;
       output [7:0] data;
       begin

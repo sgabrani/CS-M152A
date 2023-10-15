@@ -1,13 +1,13 @@
 `timescale 1ns / 1ps
 
 module tb;
-
+   reg [15:0] num_instr;
    reg [7:0] sw;
+	reg [7:0] instr;
+   integer f, status;
    reg       clk;
    reg       btnS;
    reg       btnR;
-	integer file [1023:0];
-	integer ninst; 
    
    integer   i;
    
@@ -28,27 +28,28 @@ module tb;
         btnS = 0;
         #1000 btnR = 0;
         #1500000;
-			
-		  $readmemb("C:\\Users\\Student\\Documents\\Group8_Lab1\\Lab1\\Lab1\\seq.code", file);
+		  		  
+		  f = $fopen("C:\\Users\\Student\\Desktop\\src (1)\\seq_fib.code", "r");
 		  
-		  ninst = file[0];
-		  for(i = 1; i <= ninst; i = i + 1)
-		  begin
-		    tskRunInst(file[i]);
-		  end
+		  status = $fscanf(f, "%b\n", num_instr);
 		  
-			/*
-        tskRunPUSH(0,4); // 1001
-        tskRunPUSH(0,0); // 00000100
-        tskRunPUSH(2,0); 
+		  repeat(num_instr)
+        begin
+         status = $fscanf(f, "%b\n", instr[7:0]);
+         tskRunInst(instr);
+        end
+		  
+        /*
+        tskRunPUSH(0,4);
+        tskRunPUSH(0,0);
+        tskRunPUSH(1,3);
         tskRunMULT(0,1,2);
         tskRunADD(2,0,3);
         tskRunSEND(0);
         tskRunSEND(1);
         tskRunSEND(2);
         tskRunSEND(3);
-		 */
-        
+        */
         #1000;        
         $finish;
      end
